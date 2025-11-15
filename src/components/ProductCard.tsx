@@ -32,7 +32,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         <CardContent className="p-0">
           <div className="aspect-square bg-muted relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10" />
-            <Product3D color={product.color} autoRotate={true} />
+            <Product3D color={product.color} autoRotate={true} category={product.category} />
           </div>
         </CardContent>
         <CardFooter className="flex flex-col items-start gap-3 p-4">

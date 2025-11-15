@@ -56,7 +56,7 @@ const ProductDetails = () => {
           {/* 3D Viewer */}
           <div className="aspect-square bg-card rounded-2xl overflow-hidden border border-border shadow-lg">
             <div className="w-full h-full bg-gradient-to-br from-muted to-background">
-              <Product3D color={product.color} autoRotate={false} />
+              <Product3D color={product.color} autoRotate={false} category={product.category} />
             </div>
           </div>
 

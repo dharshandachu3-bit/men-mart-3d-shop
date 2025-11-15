@@ -1,21 +1,59 @@
-import { useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { useRef, useMemo } from 'react';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
+import leatherTexture from '@/assets/textures/leather-texture.jpg';
+import denimTexture from '@/assets/textures/denim-texture.jpg';
+import cottonTexture from '@/assets/textures/cotton-texture.jpg';
+import fleeceTexture from '@/assets/textures/fleece-texture.jpg';
+import woolTexture from '@/assets/textures/wool-texture.jpg';
 
 interface Product3DProps {
   color?: string;
   autoRotate?: boolean;
+  category?: string;
 }
 
-function Mannequin({ color = '#3498db', autoRotate = false }: Product3DProps) {
+function Mannequin({ color = '#3498db', autoRotate = false, category = '' }: Product3DProps) {
   const groupRef = useRef<THREE.Group>(null);
+
+  // Load textures based on category
+  const getTextureForCategory = () => {
+    const cat = category.toLowerCase();
+    if (cat.includes('jacket') || cat.includes('leather')) return leatherTexture;
+    if (cat.includes('jeans') || cat.includes('denim')) return denimTexture;
+    if (cat.includes('shirt')) return cottonTexture;
+    if (cat.includes('hoodie')) return fleeceTexture;
+    if (cat.includes('blazer')) return woolTexture;
+    return null;
+  };
+
+  const textureUrl = getTextureForCategory();
+  const texture = useLoader(THREE.TextureLoader, textureUrl || cottonTexture);
+  
+  // Configure texture
+  useMemo(() => {
+    if (texture) {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(2, 2);
+    }
+  }, [texture]);
 
   useFrame((state, delta) => {
     if (groupRef.current && autoRotate) {
       groupRef.current.rotation.y += delta * 0.5;
     }
   });
+
+  // Create clothing material with texture
+  const clothingMaterial = useMemo(() => {
+    return new THREE.MeshStandardMaterial({
+      map: texture,
+      color: color,
+      roughness: 0.8,
+      metalness: 0.1,
+    });
+  }, [texture, color]);
 
   return (
     <group ref={groupRef} position={[0, -1.5, 0]}>
@@ -34,31 +72,31 @@ function Mannequin({ color = '#3498db', autoRotate = false }: Product3DProps) {
       {/* Torso (Shirt/Jacket) */}
       <mesh position={[0, 1.2, 0]} castShadow>
         <boxGeometry args={[0.9, 1.4, 0.5]} />
-        <meshStandardMaterial color={color} metalness={0.1} roughness={0.6} />
+        <primitive object={clothingMaterial} attach="material" />
       </mesh>
 
       {/* Left Shoulder */}
       <mesh position={[-0.5, 1.8, 0]} castShadow>
         <sphereGeometry args={[0.2, 16, 16]} />
-        <meshStandardMaterial color={color} metalness={0.1} roughness={0.6} />
+        <primitive object={clothingMaterial} attach="material" />
       </mesh>
 
       {/* Right Shoulder */}
       <mesh position={[0.5, 1.8, 0]} castShadow>
         <sphereGeometry args={[0.2, 16, 16]} />
-        <meshStandardMaterial color={color} metalness={0.1} roughness={0.6} />
+        <primitive object={clothingMaterial} attach="material" />
       </mesh>
 
       {/* Left Arm */}
       <mesh position={[-0.5, 1.2, 0]} rotation={[0, 0, 0.1]} castShadow>
         <cylinderGeometry args={[0.12, 0.12, 0.9, 16]} />
-        <meshStandardMaterial color={color} metalness={0.1} roughness={0.6} />
+        <primitive object={clothingMaterial} attach="material" />
       </mesh>
 
       {/* Right Arm */}
       <mesh position={[0.5, 1.2, 0]} rotation={[0, 0, -0.1]} castShadow>
         <cylinderGeometry args={[0.12, 0.12, 0.9, 16]} />
-        <meshStandardMaterial color={color} metalness={0.1} roughness={0.6} />
+        <primitive object={clothingMaterial} attach="material" />
       </mesh>
 
       {/* Left Hand */}
@@ -106,7 +144,7 @@ function Mannequin({ color = '#3498db', autoRotate = false }: Product3DProps) {
   );
 }
 
-export const Product3D = ({ color, autoRotate = true }: Product3DProps) => {
+export const Product3D = ({ color, autoRotate = true, category }: Product3DProps) => {
   return (
     <Canvas
       camera={{ position: [0, 1, 6], fov: 50 }}
@@ -135,7 +173,7 @@ export const Product3D = ({ color, autoRotate = true }: Product3DProps) => {
         <shadowMaterial opacity={0.2} />
       </mesh>
       
-      <Mannequin color={color} autoRotate={autoRotate} />
+      <Mannequin color={color} autoRotate={autoRotate} category={category} />
       <OrbitControls 
         enableZoom={true} 
         enablePan={false} 
