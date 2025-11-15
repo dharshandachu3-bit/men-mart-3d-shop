@@ -35,7 +35,8 @@ function Mannequin({ color = '#3498db', autoRotate = false, category = '' }: Pro
   useMemo(() => {
     if (texture) {
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-      texture.repeat.set(2, 2);
+      texture.repeat.set(1.5, 1.5);
+      texture.anisotropy = 16; // Better texture quality
     }
   }, [texture]);
 
@@ -47,13 +48,34 @@ function Mannequin({ color = '#3498db', autoRotate = false, category = '' }: Pro
 
   // Create clothing material with texture
   const clothingMaterial = useMemo(() => {
+    const cat = category.toLowerCase();
+    let roughness = 0.8;
+    let metalness = 0.1;
+    
+    // Adjust material properties based on fabric type
+    if (cat.includes('jacket') || cat.includes('leather')) {
+      roughness = 0.3;
+      metalness = 0.2;
+    } else if (cat.includes('jeans')) {
+      roughness = 0.9;
+      metalness = 0.0;
+    } else if (cat.includes('shirt')) {
+      roughness = 0.7;
+      metalness = 0.0;
+    } else if (cat.includes('blazer')) {
+      roughness = 0.6;
+      metalness = 0.1;
+    }
+    
     return new THREE.MeshStandardMaterial({
       map: texture,
       color: color,
-      roughness: 0.8,
-      metalness: 0.1,
+      roughness: roughness,
+      metalness: metalness,
+      bumpMap: texture,
+      bumpScale: 0.02,
     });
-  }, [texture, color]);
+  }, [texture, color, category]);
 
   return (
     <group ref={groupRef} position={[0, -1.5, 0]}>
@@ -69,34 +91,40 @@ function Mannequin({ color = '#3498db', autoRotate = false, category = '' }: Pro
         <meshStandardMaterial color="#d4a574" roughness={0.5} />
       </mesh>
 
-      {/* Torso (Shirt/Jacket) */}
-      <mesh position={[0, 1.2, 0]} castShadow>
-        <boxGeometry args={[0.9, 1.4, 0.5]} />
-        <primitive object={clothingMaterial} attach="material" />
+      {/* Torso (Shirt/Jacket) - Main clothing piece */}
+      <mesh position={[0, 1.2, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.95, 1.5, 0.55]} />
+        <primitive object={clothingMaterial.clone()} attach="material" />
       </mesh>
 
       {/* Left Shoulder */}
-      <mesh position={[-0.5, 1.8, 0]} castShadow>
-        <sphereGeometry args={[0.2, 16, 16]} />
-        <primitive object={clothingMaterial} attach="material" />
+      <mesh position={[-0.5, 1.85, 0]} castShadow receiveShadow>
+        <sphereGeometry args={[0.22, 32, 32]} />
+        <primitive object={clothingMaterial.clone()} attach="material" />
       </mesh>
 
       {/* Right Shoulder */}
-      <mesh position={[0.5, 1.8, 0]} castShadow>
-        <sphereGeometry args={[0.2, 16, 16]} />
-        <primitive object={clothingMaterial} attach="material" />
+      <mesh position={[0.5, 1.85, 0]} castShadow receiveShadow>
+        <sphereGeometry args={[0.22, 32, 32]} />
+        <primitive object={clothingMaterial.clone()} attach="material" />
       </mesh>
 
       {/* Left Arm */}
-      <mesh position={[-0.5, 1.2, 0]} rotation={[0, 0, 0.1]} castShadow>
-        <cylinderGeometry args={[0.12, 0.12, 0.9, 16]} />
-        <primitive object={clothingMaterial} attach="material" />
+      <mesh position={[-0.5, 1.2, 0]} rotation={[0, 0, 0.1]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.13, 0.13, 1.0, 32]} />
+        <primitive object={clothingMaterial.clone()} attach="material" />
       </mesh>
 
       {/* Right Arm */}
-      <mesh position={[0.5, 1.2, 0]} rotation={[0, 0, -0.1]} castShadow>
-        <cylinderGeometry args={[0.12, 0.12, 0.9, 16]} />
-        <primitive object={clothingMaterial} attach="material" />
+      <mesh position={[0.5, 1.2, 0]} rotation={[0, 0, -0.1]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.13, 0.13, 1.0, 32]} />
+        <primitive object={clothingMaterial.clone()} attach="material" />
+      </mesh>
+      
+      {/* Collar/Neckline */}
+      <mesh position={[0, 1.85, 0.25]} rotation={[0.3, 0, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.18, 0.16, 0.15, 32]} />
+        <primitive object={clothingMaterial.clone()} attach="material" />
       </mesh>
 
       {/* Left Hand */}
