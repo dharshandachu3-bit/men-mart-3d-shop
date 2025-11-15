@@ -1,12 +1,7 @@
 import { useRef, useMemo } from 'react';
-import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import leatherTexture from '@/assets/textures/leather-texture.jpg';
-import denimTexture from '@/assets/textures/denim-texture.jpg';
-import cottonTexture from '@/assets/textures/cotton-texture.jpg';
-import fleeceTexture from '@/assets/textures/fleece-texture.jpg';
-import woolTexture from '@/assets/textures/wool-texture.jpg';
 
 interface Product3DProps {
   color?: string;
@@ -17,36 +12,13 @@ interface Product3DProps {
 function Mannequin({ color = '#3498db', autoRotate = false, category = '' }: Product3DProps) {
   const groupRef = useRef<THREE.Group>(null);
 
-  // Load textures based on category
-  const getTextureForCategory = () => {
-    const cat = category.toLowerCase();
-    if (cat.includes('jacket') || cat.includes('leather')) return leatherTexture;
-    if (cat.includes('jeans') || cat.includes('denim')) return denimTexture;
-    if (cat.includes('shirt')) return cottonTexture;
-    if (cat.includes('hoodie')) return fleeceTexture;
-    if (cat.includes('blazer')) return woolTexture;
-    return null;
-  };
-
-  const textureUrl = getTextureForCategory();
-  const texture = useLoader(THREE.TextureLoader, textureUrl || cottonTexture);
-  
-  // Configure texture
-  useMemo(() => {
-    if (texture) {
-      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-      texture.repeat.set(1.5, 1.5);
-      texture.anisotropy = 16; // Better texture quality
-    }
-  }, [texture]);
-
   useFrame((state, delta) => {
     if (groupRef.current && autoRotate) {
       groupRef.current.rotation.y += delta * 0.5;
     }
   });
 
-  // Create clothing material with texture
+  // Create clothing material based on category
   const clothingMaterial = useMemo(() => {
     const cat = category.toLowerCase();
     let roughness = 0.8;
@@ -55,27 +27,27 @@ function Mannequin({ color = '#3498db', autoRotate = false, category = '' }: Pro
     // Adjust material properties based on fabric type
     if (cat.includes('jacket') || cat.includes('leather')) {
       roughness = 0.3;
-      metalness = 0.2;
+      metalness = 0.3;
     } else if (cat.includes('jeans')) {
-      roughness = 0.9;
+      roughness = 0.95;
       metalness = 0.0;
     } else if (cat.includes('shirt')) {
-      roughness = 0.7;
+      roughness = 0.6;
       metalness = 0.0;
     } else if (cat.includes('blazer')) {
-      roughness = 0.6;
-      metalness = 0.1;
+      roughness = 0.5;
+      metalness = 0.15;
+    } else if (cat.includes('hoodie')) {
+      roughness = 0.9;
+      metalness = 0.0;
     }
     
     return new THREE.MeshStandardMaterial({
-      map: texture,
       color: color,
       roughness: roughness,
       metalness: metalness,
-      bumpMap: texture,
-      bumpScale: 0.02,
     });
-  }, [texture, color, category]);
+  }, [color, category]);
 
   return (
     <group ref={groupRef} position={[0, -1.5, 0]}>
@@ -94,37 +66,61 @@ function Mannequin({ color = '#3498db', autoRotate = false, category = '' }: Pro
       {/* Torso (Shirt/Jacket) - Main clothing piece */}
       <mesh position={[0, 1.2, 0]} castShadow receiveShadow>
         <boxGeometry args={[0.95, 1.5, 0.55]} />
-        <primitive object={clothingMaterial.clone()} attach="material" />
+        <meshStandardMaterial 
+          color={clothingMaterial.color}
+          roughness={clothingMaterial.roughness}
+          metalness={clothingMaterial.metalness}
+        />
       </mesh>
 
       {/* Left Shoulder */}
       <mesh position={[-0.5, 1.85, 0]} castShadow receiveShadow>
         <sphereGeometry args={[0.22, 32, 32]} />
-        <primitive object={clothingMaterial.clone()} attach="material" />
+        <meshStandardMaterial 
+          color={clothingMaterial.color}
+          roughness={clothingMaterial.roughness}
+          metalness={clothingMaterial.metalness}
+        />
       </mesh>
 
       {/* Right Shoulder */}
       <mesh position={[0.5, 1.85, 0]} castShadow receiveShadow>
         <sphereGeometry args={[0.22, 32, 32]} />
-        <primitive object={clothingMaterial.clone()} attach="material" />
+        <meshStandardMaterial 
+          color={clothingMaterial.color}
+          roughness={clothingMaterial.roughness}
+          metalness={clothingMaterial.metalness}
+        />
       </mesh>
 
       {/* Left Arm */}
       <mesh position={[-0.5, 1.2, 0]} rotation={[0, 0, 0.1]} castShadow receiveShadow>
         <cylinderGeometry args={[0.13, 0.13, 1.0, 32]} />
-        <primitive object={clothingMaterial.clone()} attach="material" />
+        <meshStandardMaterial 
+          color={clothingMaterial.color}
+          roughness={clothingMaterial.roughness}
+          metalness={clothingMaterial.metalness}
+        />
       </mesh>
 
       {/* Right Arm */}
       <mesh position={[0.5, 1.2, 0]} rotation={[0, 0, -0.1]} castShadow receiveShadow>
         <cylinderGeometry args={[0.13, 0.13, 1.0, 32]} />
-        <primitive object={clothingMaterial.clone()} attach="material" />
+        <meshStandardMaterial 
+          color={clothingMaterial.color}
+          roughness={clothingMaterial.roughness}
+          metalness={clothingMaterial.metalness}
+        />
       </mesh>
       
       {/* Collar/Neckline */}
       <mesh position={[0, 1.85, 0.25]} rotation={[0.3, 0, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[0.18, 0.16, 0.15, 32]} />
-        <primitive object={clothingMaterial.clone()} attach="material" />
+        <meshStandardMaterial 
+          color={clothingMaterial.color}
+          roughness={clothingMaterial.roughness}
+          metalness={clothingMaterial.metalness}
+        />
       </mesh>
 
       {/* Left Hand */}
