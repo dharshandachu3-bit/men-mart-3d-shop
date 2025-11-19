@@ -94,9 +94,12 @@ function Mannequin({ color = '#3498db', autoRotate = false, category = '' }: Pro
       <mesh position={[0, 1.2, 0]} castShadow receiveShadow>
         <boxGeometry args={[0.95, 1.5, 0.55]} />
         <meshStandardMaterial 
+          map={clothingMaterial.map}
           color={clothingMaterial.color}
           roughness={clothingMaterial.roughness}
           metalness={clothingMaterial.metalness}
+          bumpMap={clothingMaterial.bumpMap}
+          bumpScale={clothingMaterial.bumpScale}
         />
       </mesh>
 
@@ -104,9 +107,12 @@ function Mannequin({ color = '#3498db', autoRotate = false, category = '' }: Pro
       <mesh position={[-0.5, 1.85, 0]} castShadow receiveShadow>
         <sphereGeometry args={[0.22, 32, 32]} />
         <meshStandardMaterial 
+          map={clothingMaterial.map}
           color={clothingMaterial.color}
           roughness={clothingMaterial.roughness}
           metalness={clothingMaterial.metalness}
+          bumpMap={clothingMaterial.bumpMap}
+          bumpScale={clothingMaterial.bumpScale}
         />
       </mesh>
 
@@ -114,9 +120,12 @@ function Mannequin({ color = '#3498db', autoRotate = false, category = '' }: Pro
       <mesh position={[0.5, 1.85, 0]} castShadow receiveShadow>
         <sphereGeometry args={[0.22, 32, 32]} />
         <meshStandardMaterial 
+          map={clothingMaterial.map}
           color={clothingMaterial.color}
           roughness={clothingMaterial.roughness}
           metalness={clothingMaterial.metalness}
+          bumpMap={clothingMaterial.bumpMap}
+          bumpScale={clothingMaterial.bumpScale}
         />
       </mesh>
 
@@ -124,9 +133,12 @@ function Mannequin({ color = '#3498db', autoRotate = false, category = '' }: Pro
       <mesh position={[-0.5, 1.2, 0]} rotation={[0, 0, 0.1]} castShadow receiveShadow>
         <cylinderGeometry args={[0.13, 0.13, 1.0, 32]} />
         <meshStandardMaterial 
+          map={clothingMaterial.map}
           color={clothingMaterial.color}
           roughness={clothingMaterial.roughness}
           metalness={clothingMaterial.metalness}
+          bumpMap={clothingMaterial.bumpMap}
+          bumpScale={clothingMaterial.bumpScale}
         />
       </mesh>
 
@@ -134,9 +146,12 @@ function Mannequin({ color = '#3498db', autoRotate = false, category = '' }: Pro
       <mesh position={[0.5, 1.2, 0]} rotation={[0, 0, -0.1]} castShadow receiveShadow>
         <cylinderGeometry args={[0.13, 0.13, 1.0, 32]} />
         <meshStandardMaterial 
+          map={clothingMaterial.map}
           color={clothingMaterial.color}
           roughness={clothingMaterial.roughness}
           metalness={clothingMaterial.metalness}
+          bumpMap={clothingMaterial.bumpMap}
+          bumpScale={clothingMaterial.bumpScale}
         />
       </mesh>
       
@@ -144,9 +159,12 @@ function Mannequin({ color = '#3498db', autoRotate = false, category = '' }: Pro
       <mesh position={[0, 1.85, 0.25]} rotation={[0.3, 0, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[0.18, 0.16, 0.15, 32]} />
         <meshStandardMaterial 
+          map={clothingMaterial.map}
           color={clothingMaterial.color}
           roughness={clothingMaterial.roughness}
           metalness={clothingMaterial.metalness}
+          bumpMap={clothingMaterial.bumpMap}
+          bumpScale={clothingMaterial.bumpScale}
         />
       </mesh>
 
