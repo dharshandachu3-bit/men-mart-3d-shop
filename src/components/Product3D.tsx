@@ -1,7 +1,12 @@
 import { useRef, useMemo } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
+import cottonTexture from '@/assets/textures/cotton-texture.jpg';
+import denimTexture from '@/assets/textures/denim-texture.jpg';
+import fleeceTexture from '@/assets/textures/fleece-texture.jpg';
+import leatherTexture from '@/assets/textures/leather-texture.jpg';
+import woolTexture from '@/assets/textures/wool-texture.jpg';
 
 interface Product3DProps {
   color?: string;
@@ -18,36 +23,58 @@ function Mannequin({ color = '#3498db', autoRotate = false, category = '' }: Pro
     }
   });
 
-  // Create clothing material based on category
+  // Load textures
+  const textures = useLoader(THREE.TextureLoader, [
+    cottonTexture,
+    denimTexture,
+    fleeceTexture,
+    leatherTexture,
+    woolTexture
+  ]);
+
+  // Create clothing material based on category with real textures
   const clothingMaterial = useMemo(() => {
     const cat = category.toLowerCase();
     let roughness = 0.8;
     let metalness = 0.1;
+    let textureMap = textures[0]; // default to cotton
     
-    // Adjust material properties based on fabric type
+    // Select texture and adjust material properties based on fabric type
     if (cat.includes('jacket') || cat.includes('leather')) {
       roughness = 0.3;
       metalness = 0.3;
+      textureMap = textures[3]; // leather
     } else if (cat.includes('jeans')) {
       roughness = 0.95;
       metalness = 0.0;
+      textureMap = textures[1]; // denim
     } else if (cat.includes('shirt')) {
       roughness = 0.6;
       metalness = 0.0;
+      textureMap = textures[0]; // cotton
     } else if (cat.includes('blazer')) {
       roughness = 0.5;
       metalness = 0.15;
+      textureMap = textures[4]; // wool
     } else if (cat.includes('hoodie')) {
       roughness = 0.9;
       metalness = 0.0;
+      textureMap = textures[2]; // fleece
     }
     
+    // Configure texture
+    textureMap.wrapS = textureMap.wrapT = THREE.RepeatWrapping;
+    textureMap.repeat.set(2, 2);
+    
     return new THREE.MeshStandardMaterial({
+      map: textureMap,
       color: color,
       roughness: roughness,
       metalness: metalness,
+      bumpMap: textureMap,
+      bumpScale: 0.03,
     });
-  }, [color, category]);
+  }, [color, category, textures]);
 
   return (
     <group ref={groupRef} position={[0, -1.5, 0]}>
